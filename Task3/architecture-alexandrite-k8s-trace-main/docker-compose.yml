@@ -1,0 +1,22 @@
+services:
+  tracing:
+    image: jaegertracing/jaeger:latest
+    ports:
+      - "16686:16686"
+
+  orders:
+    build:
+      context: ./services/service-a
+      dockerfile: Dockerfile
+    environment:
+      - TRACING_URL=http://tracing:4317
+
+  calculations:
+    build:
+      context: ./services/service-b
+      dockerfile: Dockerfile
+    ports:
+      - "9999:8080"
+    environment:
+      - TRACING_URL=http://tracing:4317
+      - ORDERS_SERVICE_URL=http://orders:8080
